@@ -1,0 +1,40 @@
+{
+  "pkg": "@atendimento-lojas/ui",
+  "globalName": "AtendimentoUI",
+  "shape": "package",
+  "buildCmd": "cd design-system && npm ci && npm run build",
+  "cssEntry": "dist/estilo.css",
+  "provider": {
+    "component": "Tela"
+  },
+  "overrides": {
+    "AreaRecolhivel": {
+      "cardMode": "column"
+    },
+    "Aviso": {
+      "cardMode": "column"
+    },
+    "CartaoEntrada": {
+      "cardMode": "column"
+    },
+    "CartaoLoja": {
+      "cardMode": "column"
+    },
+    "ListaAutomatica": {
+      "cardMode": "column"
+    },
+    "ListaLojas": {
+      "cardMode": "column"
+    },
+    "ListaPassos": {
+      "cardMode": "column"
+    },
+    "Secao": {
+      "cardMode": "column"
+    }
+  },
+  "readmeHeader": ".design-sync/conventions.md",
+  "libOverrides": {
+    "dts.mjs": "jsdocFor mantém acentos do português no índice de componentes"
+  }
+}

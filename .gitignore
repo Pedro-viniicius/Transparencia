@@ -3,3 +3,12 @@ credenciais.txt
 *.log
 backups/
 __pycache__/
+
+# design-sync (scratch e build; o resto de .design-sync/ vai para o Git)
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules
+design-system/node_modules/
+design-system/dist/
