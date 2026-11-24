@@ -104,7 +104,7 @@ def rodar_pessoas(env):
 
 
 def aplicar_marca(env, avatares):
-    """Nome e logos do painel + avatar de cada caixa. avatares: [(inbox_id, arquivo em portal/img)]."""
+    """Nome, logos e cores do painel + avatar de cada caixa. avatares: [(inbox_id, arquivo em portal/img)]."""
     portal = env.get("PORTAL_URL", PORTAL_PADRAO).rstrip("/")
     dados = {
         "configs": {
@@ -113,6 +113,10 @@ def aplicar_marca(env, avatares):
             "LOGO": f"{portal}/logo-painel.svg",
             "LOGO_DARK": f"{portal}/logo-painel-escuro.svg",
             "LOGO_THUMBNAIL": f"{portal}/logo.svg",
+            # Cores da Central no painel (gerado por scripts/gerar_tema_painel.py).
+            "DASHBOARD_SCRIPTS": '<style id="atendimento-lojas-tema">\n'
+                                 + (RAIZ / "portal" / "painel-tema.css").read_text(encoding="utf-8")
+                                 + "</style>",
         },
         "avatares": [
             {"inbox_id": i, "arquivo": arq,
@@ -129,7 +133,7 @@ def aplicar_marca(env, avatares):
     if r.returncode != 0 or not ultima:
         raise SystemExit(f"marca.rb falhou:\n{r.stdout}\n{r.stderr}")
     trocados = json.loads(ultima[-1])["avatares_trocados"]
-    print(f"  nome e logos: {NOME_MARCA}; avatares atualizados: {', '.join(trocados) or 'nenhum (já estavam)'}")
+    print(f"  nome, logos e cores: {NOME_MARCA}; avatares atualizados: {', '.join(trocados) or 'nenhum (já estavam)'}")
 
 
 def garantir_equipes(cw, ids_por_email):

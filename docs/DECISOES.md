@@ -72,6 +72,16 @@ aplicados pelo `configurar.py` via `scripts/marca.rb`. Nada de fork do Chatwoot.
 **Consequências:** quem abre a Central vê se os números estão conectados (não vê conversas nem
 dados). A logo do painel vem da Central: no servidor, definir `PORTAL_URL` no `.env`.
 
+## ADR-010 — Cores da Central no painel por CSS injetado
+**Contexto:** a Central e o design system usam o azul da marca; o painel, onde a equipe passa o
+dia, continuava com o azul padrão do Chatwoot.
+**Decisão:** gerar `portal/painel-tema.css` a partir do CSS do próprio Chatwoot (só as regras
+com o azul padrão, cor trocada por variáveis da marca) e injetar pela configuração
+`DASHBOARD_SCRIPTS`. Sem fork, sem imagem própria, reversível apagando a configuração.
+**Consequências:** a cada atualização do Chatwoot o tema precisa ser gerado de novo (classes
+mudam); o teste avisa se o painel não estiver servindo o arquivo atual. Só a tela de redefinir senha
+fica sem o tema (o Chatwoot não carrega scripts nela).
+
 ## Riscos observados no teste real
 - **Mensagens duplicadas no painel** em algumas conversas do histórico copiado (mesmo ID do
   WhatsApp gravado duas vezes). Provável efeito dos identificadores novos do WhatsApp (LID)

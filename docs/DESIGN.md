@@ -77,8 +77,31 @@ headless), login do painel com a marca nos dois temas. Sem rolagem horizontal. D
 corrigido: o botão "Parar" aparecia apesar do atributo `hidden`, e o quadro do QR aparecia vazio
 junto da mensagem de erro.
 
-## Próximo passo de design: /design-sync
+## Painel de conversas com as cores da Central
 
-Os tokens acima e os componentes da Central estão prontos para virar um design system no
-claude.ai/design. A sincronização é feita pela skill `/design-sync`, que precisa ser iniciada
-pelo usuário numa sessão do Claude Code. Fonte da verdade: `portal/estilo.css` (bloco `:root`).
+O Chatwoot pinta o azul dele (#2781f6) pelas variáveis `--blue-1..12` e por centenas de classes
+com a cor escrita direto. `scripts/gerar_tema_painel.py` lê o CSS do Chatwoot que está rodando,
+copia só as regras com esse azul (mesmos seletores, `@media` e `@supports`) e troca a cor por
+variáveis da marca. O resultado fica em `portal/painel-tema.css` (gerado, não editar à mão) e o
+`configurar.py` o injeta pela configuração `DASHBOARD_SCRIPTS` do Chatwoot.
+
+| | Claro | Escuro |
+|---|---|---|
+| Fundo de botão e destaque (`--al-marca-rgb`) | #2453c7 (branco 6,7:1) | #466ede (branco 4,6:1) |
+| Texto e links (`--al-marca-texto-rgb`) | #2453c7 | #7d9cf0 (7:1 no fundo escuro) |
+| Fundo da página | #f4f6fb (`--fundo`) | o do Chatwoot |
+
+Também: foco de teclado visível na cor da marca onde o Chatwoot não define outro. A fonte (Inter)
+e os cantos ficam os do Chatwoot, para não desalinhar o layout dele.
+
+**Depois de atualizar o Chatwoot**, rode `python3 scripts/gerar_tema_painel.py` e
+`python3 scripts/configurar.py` (os nomes das classes mudam a cada versão). O teste confere se o
+painel serve o `painel-tema.css` atual. Para desligar: apagar `DASHBOARD_SCRIPTS` em
+Super Admin → Installation Config (e tirar a linha do `configurar.py`).
+
+## Design system no claude.ai
+
+Os componentes da Central viraram o pacote React `design-system/` (`@atendimento-lojas/ui`),
+sincronizado com o claude.ai pela skill `/design-sync` (iniciada pelo usuário). Notas da
+sincronização em `.design-sync/NOTES.md`. Fonte da verdade das cores: `portal/estilo.css`
+(bloco `:root`); o pacote e o tema do painel copiam esses valores.

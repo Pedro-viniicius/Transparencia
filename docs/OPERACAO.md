@@ -87,4 +87,6 @@ Servidor sugerido: 2 vCPU, 4 GB de RAM, Linux com Docker.
   terminal: `curl http://127.0.0.1:3000/api` e `curl http://127.0.0.1:8080/`.
 - Logs: `docker compose logs -f evolution` / `chatwoot` / `sidekiq`.
 - Atualizar versões: rodar `scripts/backup.sh`, trocar a tag no `docker-compose.yml` e
-  rodar `scripts/subir.sh` (que termina com o teste).
+  rodar `scripts/subir.sh` (que termina com o teste). Se trocou a versão do Chatwoot, antes do
+  teste rode `python3 scripts/gerar_tema_painel.py && python3 scripts/configurar.py` para
+  refazer as cores do painel.

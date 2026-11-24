@@ -18,7 +18,7 @@ sobe num VPS (ver `docs/OPERACAO.md`).
 
 ```bash
 scripts/subir.sh     # sobe tudo, aplica a configuração e roda o teste (idempotente)
-scripts/testar.py    # só o teste ponta a ponta (29 verificações, apaga o que cria)
+scripts/testar.py    # só o teste ponta a ponta (30 verificações, apaga o que cria)
 scripts/backup.sh    # bancos + sessões do WhatsApp + anexos, em backups/
 docker compose down  # desliga (os dados ficam nos volumes)
 ```
@@ -44,7 +44,9 @@ A Central é a porta de entrada da equipe: botão do painel, situação de cada 
 (atualiza a cada 15 s), guia rápido para as atendentes e uma área técnica que gera o QR Code
 de conexão (pede a chave; o QR se renova sozinho). O painel usa o nome **Atendimento das
 Lojas**, com a logo da Central, e cada caixa tem um avatar na cor da loja (verde-azulado para a
-Loja de Baixo, âmbar para a Loja da Praça). Nada do funcionamento mudou. Detalhes e tokens de
+Loja de Baixo, âmbar para a Loja da Praça). O painel de conversas também ganhou as cores da
+Central (azul da marca nos botões, abas, links e balões, fundo claro azulado, foco visível), por
+CSS injetado, sem mexer no código do Chatwoot. Nada do funcionamento mudou. Detalhes e tokens de
 design em `docs/DESIGN.md`.
 
 ## Teste com WhatsApp real (24/11, chip de teste)

@@ -72,6 +72,14 @@ def testar_portal():
     checar(st == 401, "QR Code sem a chave é recusado")
     st, _ = portal("/api/status/../instance/fetchInstances")
     checar(st in (400, 404), "outras rotas do Evolution não ficam expostas")
+    try:
+        with urllib.request.urlopen(cfg.CHATWOOT + "/app/login", timeout=10) as r:
+            pagina = r.read().decode()
+    except OSError:
+        pagina = ""
+    tema = (cfg.RAIZ / "portal" / "painel-tema.css").read_text(encoding="utf-8")
+    checar('id="atendimento-lojas-tema"' in pagina and tema.strip() in pagina,
+           "o painel carrega as cores da Central (painel-tema.css atual)")
 
 
 def main():
