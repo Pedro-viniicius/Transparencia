@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Atendimento das Lojas</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="estilo.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="topo">
+    <div class="topo__marca">
+      <img src="logo.svg" alt="" width="40" height="40">
+      <div>
+        <p class="topo__nome">Atendimento das Lojas</p>
+        <p class="topo__sub">Central da equipe</p>
+      </div>
+    </div>
+    <p class="topo__painel" id="painel-situacao" aria-live="polite">
+      <span class="ponto" aria-hidden="true"></span><span>Verificando o painel…</span>
+    </p>
+  </header>
+
+  <main id="conteudo" class="conteudo">
+    <section class="entrada" aria-labelledby="t-entrada">
+      <div>
+        <h1 id="t-entrada">Bom atendimento! 👋</h1>
+        <p>Todas as conversas do WhatsApp e do Instagram ficam no painel. Entre com o seu e-mail e senha.</p>
+      </div>
+      <a class="botao botao--grande" id="abrir-painel" href="http://chatwoot.localhost:3000" target="_blank" rel="noopener">
+        Abrir o painel de conversas
+        <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+    </section>
+
+    <section aria-labelledby="t-numeros">
+      <div class="secao__cabeca">
+        <h2 id="t-numeros">Números de WhatsApp</h2>
+        <p class="secao__nota" id="atualizado">Atualiza sozinho a cada 15 segundos</p>
+      </div>
+      <ul class="lojas" id="lojas" aria-live="polite">
+        <li class="loja" data-loja="loja-baixa">
+          <span class="loja__selo" aria-hidden="true">LB</span>
+          <div class="loja__texto">
+            <h3>Loja de Baixo</h3>
+            <p class="loja__dica">Verificando…</p>
+          </div>
+          <span class="situacao situacao--neutro">…</span>
+        </li>
+        <li class="loja" data-loja="loja-praca">
+          <span class="loja__selo" aria-hidden="true">LP</span>
+          <div class="loja__texto">
+            <h3>Loja da Praça</h3>
+            <p class="loja__dica">Verificando…</p>
+          </div>
+          <span class="situacao situacao--neutro">…</span>
+        </li>
+      </ul>
+    </section>
+
+    <section aria-labelledby="t-guia">
+      <div class="secao__cabeca">
+        <h2 id="t-guia">Guia rápido</h2>
+      </div>
+      <ol class="passos">
+        <li>
+          <h3>Fique <em>Online</em></h3>
+          <p>Ao entrar, confira se seu status está <strong>Online</strong> (canto de baixo, na sua foto). Conversa nova só vai para quem está online.</p>
+        </li>
+        <li>
+          <h3>Você vê a sua loja</h3>
+          <p>Cada atendente vê só as conversas da própria loja. O dono e a esposa veem as duas.</p>
+        </li>
+        <li>
+          <h3>Responda pela conversa</h3>
+          <p>O cliente recebe no WhatsApp com o seu nome em cima da mensagem. Para anotar algo só para a equipe, use <strong>Nota privada</strong>.</p>
+        </li>
+        <li>
+          <h3>Terminou? Resolva</h3>
+          <p>Clique em <strong>Resolver</strong>. Se o cliente escrever de novo, a conversa aparece outra vez no painel.</p>
+        </li>
+      </ol>
+
+      <div class="automatico">
+        <h3>O que o sistema faz sozinho</h3>
+        <ul>
+          <li><span class="marcador marcador--baixa" aria-hidden="true"></span>Responde a primeira mensagem do cliente com as boas-vindas da loja.</li>
+          <li><span class="marcador marcador--praca" aria-hidden="true"></span>Coloca a conversa na equipe da loja certa.</li>
+          <li><span class="marcador marcador--marca" aria-hidden="true"></span>No Instagram, pergunta com qual loja o cliente quer falar (1 ou 2).</li>
+        </ul>
+      </div>
+    </section>
+
+    <section aria-labelledby="t-tecnica">
+      <details class="tecnica" id="tecnica">
+        <summary>
+          <span>
+            <span class="tecnica__titulo" id="t-tecnica">Área técnica: conectar um número</span>
+            <span class="tecnica__sub">Só para o responsável técnico. Pede a chave do sistema.</span>
+          </span>
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </summary>
+
+        <div class="tecnica__corpo">
+          <div class="aviso" role="note">
+            <strong>Antes de escanear:</strong>
+            <ul>
+              <li>Use <strong>só o chip da loja</strong>. Nunca um número pessoal: o histórico inteiro de conversas é copiado para o painel.</li>
+              <li>Desligue as automações das caixas de WhatsApp (painel → Configurações → Automação). Depois de conferir o número, rode <code>scripts/configurar.py</code> para religar.</li>
+            </ul>
+          </div>
+
+          <form class="conectar" id="form-conectar" autocomplete="off">
+            <div class="campo">
+              <label for="loja-qr">Loja</label>
+              <select id="loja-qr" name="loja">
+                <option value="loja-baixa">Loja de Baixo</option>
+                <option value="loja-praca">Loja da Praça</option>
+              </select>
+            </div>
+            <div class="campo">
+              <label for="chave">Chave do sistema (apikey)</label>
+              <input id="chave" name="chave" type="password" spellcheck="false" autocapitalize="off" required
+                     aria-describedby="chave-ajuda">
+              <p class="campo__ajuda" id="chave-ajuda">Está em <code>credenciais.txt</code>. Fica guardada só nesta aba.</p>
+            </div>
+            <div class="conectar__acoes">
+              <button class="botao" type="submit" id="gerar">Gerar QR Code</button>
+              <button class="botao botao--secundario" type="button" id="parar" hidden>Parar</button>
+            </div>
+          </form>
+
+          <p class="qr__estado" id="qr-estado" role="status"></p>
+
+          <div class="qr" id="qr" hidden>
+            <div class="qr__imagem"><img id="qr-img" alt="QR Code para conectar o WhatsApp da loja" width="264" height="264"></div>
+            <div class="qr__texto">
+              <ol>
+                <li>No celular da loja, abra o WhatsApp.</li>
+                <li>Toque em <strong>⋮</strong> (ou Configurações) → <strong>Dispositivos conectados</strong> → <strong>Conectar dispositivo</strong>.</li>
+                <li>Aponte a câmera para o código. Ele se renova sozinho.</li>
+              </ol>
+              <p class="campo__ajuda">Se o WhatsApp disser “não foi possível conectar novos dispositivos”, espere alguns segundos e escaneie o próximo código: é uma falha conhecida e passa com novas tentativas.</p>
+            </div>
+          </div>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p>Roda neste computador. As conversas não passam por outros servidores além do WhatsApp e do Instagram.</p>
+  </footer>
+</body>
+</html>

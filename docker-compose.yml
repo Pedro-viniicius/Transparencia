@@ -1,0 +1,137 @@
+# Atendimento das lojas: Chatwoot (painel) + Evolution API (WhatsApp por QR Code)
+# + Central do Atendimento (nginx, página da equipe).
+# Tudo local; portas só em 127.0.0.1. Segredos no .env (gerado por scripts/gerar-env.sh).
+
+x-chatwoot: &chatwoot
+  image: chatwoot/chatwoot:v4.19.1-ce
+  env_file: .env
+  environment:
+    NODE_ENV: production
+    RAILS_ENV: production
+    INSTALLATION_ENV: docker
+    POSTGRES_HOST: postgres
+    POSTGRES_USERNAME: postgres
+    POSTGRES_DATABASE: chatwoot
+    REDIS_URL: redis://redis:6379/1
+    # Sem isto o Chatwoot recusa o webhook para http://evolution:8080 ("no public ip addresses")
+    # e as respostas do painel nunca chegam ao WhatsApp. Ver docs/DECISOES.md (ADR-003).
+    SAFE_FETCH_ALLOW_PRIVATE_NETWORK: "true"
+  volumes:
+    - chatwoot_storage:/app/storage
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_started
+  restart: unless-stopped
+
+services:
+  chatwoot:
+    <<: *chatwoot
+    entrypoint: docker/entrypoints/rails.sh
+    command: ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      default:
+        # O mesmo endereço serve ao navegador (127.0.0.1) e ao Evolution (rede interna),
+        # para os anexos enviados pelo painel chegarem ao WhatsApp.
+        aliases: [chatwoot.localhost]
+
+  sidekiq:
+    <<: *chatwoot
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+
+  evolution:
+    image: evoapicloud/evolution-api:v2.3.8
+    env_file: .env
+    environment:
+      SERVER_TYPE: http
+      SERVER_PORT: 8080
+      SERVER_URL: http://evolution:8080
+      LANGUAGE: pt-BR
+      TELEMETRY_ENABLED: "false"
+      DEL_INSTANCE: "false"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_CLIENT_NAME: evolution
+      DATABASE_SAVE_DATA_INSTANCE: "true"
+      DATABASE_SAVE_DATA_NEW_MESSAGE: "true"
+      DATABASE_SAVE_MESSAGE_UPDATE: "true"
+      DATABASE_SAVE_DATA_CONTACTS: "true"
+      DATABASE_SAVE_DATA_CHATS: "true"
+      DATABASE_SAVE_DATA_LABELS: "true"
+      DATABASE_SAVE_DATA_HISTORIC: "true"
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://redis:6379/6
+      CACHE_REDIS_PREFIX_KEY: evolution
+      CACHE_REDIS_SAVE_INSTANCES: "false"
+      CACHE_LOCAL_ENABLED: "false"
+      CHATWOOT_ENABLED: "true"
+      CHATWOOT_MESSAGE_READ: "true"
+      CHATWOOT_MESSAGE_DELETE: "true"
+      # Desligado: o contato-robô mostrava o QR Code dentro da caixa da loja, visível às
+      # atendentes. Conectar/reconectar número é feito pelo /manager (ver docs/OPERACAO.md).
+      CHATWOOT_BOT_CONTACT: "false"
+      CHATWOOT_IMPORT_PLACEHOLDER_MEDIA_MESSAGE: "true"
+      CONFIG_SESSION_PHONE_CLIENT: Atendimento
+      CONFIG_SESSION_PHONE_NAME: Chrome
+      QRCODE_LIMIT: 30
+      WEBHOOK_GLOBAL_ENABLED: "false"
+      # Sem INFO/LOG: nesses níveis o Evolution grava o conteúdo das mensagens no log.
+      LOG_LEVEL: ERROR,WARN
+      LOG_BAILEYS: error
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - evolution_instances:/evolution/instances
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  portal:
+    # Central do Atendimento: página da equipe (portal/) + situação dos números e QR Code.
+    image: nginx:1.31.7-alpine
+    environment:
+      # Só a rota de situação (leitura) usa a chave; o QR exige digitar a chave na página.
+      EVOLUTION_APIKEY: ${AUTHENTICATION_API_KEY:?rode scripts/gerar-env.sh}
+    volumes:
+      - ./portal:/usr/share/nginx/html:ro
+      - ./docker/nginx/templates:/etc/nginx/templates:ro
+    ports:
+      - "127.0.0.1:8090:80"
+    depends_on:
+      - evolution
+      - chatwoot
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: chatwoot
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?rode scripts/gerar-env.sh}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  chatwoot_storage:
+  evolution_instances:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,57 @@
+# Central do Atendimento (portal/). Gerado pelo envsubst da imagem oficial do nginx:
+# só a variável EVOLUTION_APIKEY é substituída; as do nginx ($1, $host…) ficam intactas.
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+    server_tokens off;
+
+    # Rede interna do Docker: resolve "evolution" e "chatwoot" na hora (proxy_pass com variável).
+    resolver 127.0.0.11 valid=30s ipv6=off;
+
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'" always;
+    add_header X-Content-Type-Options nosniff always;
+    add_header Referrer-Policy no-referrer always;
+
+    location / {
+        try_files $uri $uri/ =404;
+        add_header Cache-Control "no-cache" always;
+        add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'" always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy no-referrer always;
+    }
+
+    # Imagens usadas pelo painel (logo da marca): o Chatwoot carrega de outra origem.
+    location ~ ^/(logo[a-z-]*\.svg|img/[a-z-]+\.png)$ {
+        add_header Cache-Control "public, max-age=3600" always;
+        add_header X-Content-Type-Options nosniff always;
+    }
+
+    # Situação de cada número, SÓ LEITURA: o nginx põe a chave (a página não a conhece).
+    location ~ ^/api/status/(loja-baixa|loja-praca)$ {
+        limit_except GET { deny all; }
+        set $instancia $1;
+        proxy_pass http://evolution:8080/instance/connectionState/$instancia;
+        proxy_set_header apikey "${EVOLUTION_APIKEY}";
+        proxy_set_header Cookie "";
+        proxy_read_timeout 8s;
+    }
+
+    # QR Code: a chave vem de quem está na página (cabeçalho apikey); o nginx não a injeta.
+    location ~ ^/api/conectar/(loja-baixa|loja-praca)$ {
+        limit_except GET { deny all; }
+        set $instancia $1;
+        proxy_pass http://evolution:8080/instance/connect/$instancia;
+        proxy_set_header Cookie "";
+        proxy_read_timeout 15s;
+    }
+
+    # O painel está no ar? (rota pública do Chatwoot, só versão e saúde)
+    location = /api/painel {
+        limit_except GET { deny all; }
+        proxy_pass http://chatwoot:3000/api;
+        proxy_set_header Host chatwoot.localhost;
+        proxy_read_timeout 8s;
+    }
+}

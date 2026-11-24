@@ -1,0 +1,5 @@
+.env
+credenciais.txt
+*.log
+backups/
+__pycache__/

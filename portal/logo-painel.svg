@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 64" role="img" aria-label="Atendimento das Lojas">
+  <rect width="64" height="64" rx="16" fill="#2453c7"/>
+  <path d="M15 20a7 7 0 0 1 7-7h20a7 7 0 0 1 7 7v14a7 7 0 0 1-7 7H29l-9 8v-8h1a7 7 0 0 1-6-7z" fill="#fff"/>
+  <circle cx="26" cy="27" r="4" fill="#0f766e"/>
+  <circle cx="38" cy="27" r="4" fill="#b45309"/>
+  <text x="78" y="30" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif" font-size="22" font-weight="700" fill="#111827">Atendimento</text>
+  <text x="78" y="54" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif" font-size="18" font-weight="500" fill="#111827" opacity="0.72">das Lojas</text>
+</svg>
